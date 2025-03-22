@@ -1,3 +1,4 @@
+// VARIABLES
 const main = document.querySelector('main');
 const dialog = document.querySelector('dialog');
 const newBookBtn = document.getElementById('new-book');
@@ -5,7 +6,7 @@ const submitBtn = document.getElementById('submit');
 const closeBtn = document.getElementById('close')
 const form = document.getElementById('form');
 
-const library = [];
+let library = [];
 
 const book = new Book("The Wizard of Oz", "L. Frank Baum", 215, true);
 const book1 = new Book("Salem's Lot", "Stephen King", 235, true);
@@ -21,36 +22,45 @@ const book7 = new Book("The Code Book", "Simon Singh", 235, true);
 
 
 library.push(book, book1, book2, book3, book4, book5, book6, book7);
+refreshMain();
 
-library.forEach(book => {
-    const card = createCard(book);
-    main.appendChild(card);
+// Delete book event listener;
+// Only works once. WHY?!?!
+let bins = Array.from(document.getElementsByClassName('trash'));
+bins.forEach(bin => {
+    bin.addEventListener('click', () => {
+        deleteBook(bin);
+    });
 });
 
-
-
+// EVENT LISTENERS
 newBookBtn.addEventListener('click', () => {
     dialog.showModal();
 });
+
 closeBtn.addEventListener('click', () => {
     dialog.close();
 });
 
-
 form.addEventListener('submit', (e) => {
     e.preventDefault();
 
+    // GET info from NewBook HTML form
     const formData = new FormData(form);
     const data = Object.fromEntries(formData);
 
     dialog.close();
 
-    addBookToLibrary(data.title, data.author, data.pages, data.read);
-    
-    main.innerHTML = '';
-    library.forEach(book => {
-        const card = createCard(book);
-        main.appendChild(card);
+    // Create book and card
+    let book = addBookToLibrary(data.title, data.author, data.pages, data.read);
+    refreshMain();
+
+    // Update bins[] & 'delete' eventListeners
+    bins = Array.from(document.getElementsByClassName('trash'));
+    bins.forEach(bin => {
+        bin.addEventListener('click', () => {
+            deleteBook(bin);
+        });
     });
 });
 
@@ -59,6 +69,7 @@ form.addEventListener('submit', (e) => {
 
 
 
+// FUNCTION DECLARATIONS
 function Book(title, author, pages, read = false) {
     this.title = title;
     this.author = author;
@@ -70,14 +81,25 @@ function Book(title, author, pages, read = false) {
 function addBookToLibrary(title, author, pages, read = false) {
     const book = new Book(title, author, pages, read);
     library.push(book);
+
+    return book;
 } 
 
+function refreshMain() {
+    main.innerHTML = '';
+    library.forEach(book => {
+        const card = createCard(book);
+        main.appendChild(card);
+    });
+}
 
 function createCard(book) {
     const card = document.createElement('div');
     const title = document.createElement('h3');
     const author = document.createElement('h5');
     const pages = document.createElement('p');
+    const img = new Image();
+    img.src = "./assets/trash-can-outline.svg"
     
     
     card.classList.add('card');
@@ -88,5 +110,24 @@ function createCard(book) {
     card.appendChild(title);
     card.appendChild(author);
     card.appendChild(pages);
+    card.appendChild(img);
+    img.classList.add('trash');
     return card;
+}
+
+function deleteBook(bin) {
+    const ind = bins.indexOf(bin);
+    console.log(ind);
+    library.splice(ind, 1);
+    bins = bins.splice(ind, 1);
+    refreshMain();
+
+    // IDK why, but bins must be redeclared for
+    // the eventListener to successfully reapply
+    bins = Array.from(document.getElementsByClassName('trash'));
+    bins.forEach(bin => {
+        bin.addEventListener('click', () => {
+            deleteBook(bin);
+        });
+    });
 }
