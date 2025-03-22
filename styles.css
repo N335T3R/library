@@ -135,9 +135,21 @@ main {
     position: absolute;
     bottom: 5%;
 }
-.card > img {
+.trash {
     position: absolute;
     bottom: 5%;
     left: 5%;
     width: 2rem;
+}
+.trash:hover {
+    cursor: pointer;
+}
+.read {
+    position: absolute;
+    bottom: 5%;
+    right: 5%;
+    width: 2rem;
+}
+.read:hover {
+    cursor: pointer;
 }

@@ -24,16 +24,25 @@ const book7 = new Book("The Code Book", "Simon Singh", 235, true);
 library.push(book, book1, book2, book3, book4, book5, book6, book7);
 refreshMain();
 
-// Delete book event listener;
-// Only works once. WHY?!?!
 let bins = Array.from(document.getElementsByClassName('trash'));
+let reads = Array.from(document.getElementsByClassName('read'));
+
+
+// EVENT LISTENERS
+// Delete book event listener;
 bins.forEach(bin => {
     bin.addEventListener('click', () => {
         deleteBook(bin);
     });
 });
+// (un)Read book event listener
+reads.forEach(read => {
+    read.addEventListener('click', () => {
+        toggleRead(read);
+    });
+});
 
-// EVENT LISTENERS
+// New book listeners
 newBookBtn.addEventListener('click', () => {
     dialog.showModal();
 });
@@ -62,7 +71,17 @@ form.addEventListener('submit', (e) => {
             deleteBook(bin);
         });
     });
+
+    reads = Array.from(document.getElementsByClassName('read'));
+    reads.forEach(read => {
+        read.addEventListener('click', () => {
+            toggleRead(read);
+        });
+    });
 });
+
+
+
 
 
 
@@ -76,6 +95,10 @@ function Book(title, author, pages, read = false) {
     this.pages = pages;
     this.read = read;
     this.id = crypto.randomUUID();
+    this.toggleRead = () => {
+        if (this.read) this.read = false;
+        else this.read = true;
+    }
 }
 
 function addBookToLibrary(title, author, pages, read = false) {
@@ -98,10 +121,13 @@ function createCard(book) {
     const title = document.createElement('h3');
     const author = document.createElement('h5');
     const pages = document.createElement('p');
-    const img = new Image();
-    img.src = "./assets/trash-can-outline.svg"
+    const bin = new Image();
+    bin.src = "./assets/trash-can-outline.svg"
+    const read = new Image();
+    if (book.read)  read.src = "assets/book-check-outline.svg"
+    else  read.src = "./assets/book-open-variant.svg"
     
-    
+
     card.classList.add('card');
     title.innerText = `${book.title}`;
     author.innerText = `by ${book.author}`;
@@ -110,8 +136,10 @@ function createCard(book) {
     card.appendChild(title);
     card.appendChild(author);
     card.appendChild(pages);
-    card.appendChild(img);
-    img.classList.add('trash');
+    card.appendChild(bin);
+    bin.classList.add('trash');
+    card.append(read);
+    read.classList.add('read');
     return card;
 }
 
@@ -130,4 +158,19 @@ function deleteBook(bin) {
             deleteBook(bin);
         });
     });
+
+    reads = Array.from(document.getElementsByClassName('read'));
+    reads.forEach(read => {
+        read.addEventListener('click', () => {
+            toggleRead(read);
+        });
+    });
+}
+
+function toggleRead(read) {
+    const ind = reads.indexOf(read);
+    library[ind].toggleRead();
+
+    if (library[ind].read) reads[ind].src = "assets/book-check-outline.svg";
+    else read.src = "./assets/book-open-variant.svg"
 }
