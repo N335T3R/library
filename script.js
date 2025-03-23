@@ -20,10 +20,10 @@ const book7 = new Book("The Code Book", "Simon Singh", 235, true);
 
 
 
-
+// Create initial books
 library.push(book, book1, book2, book3, book4, book5, book6, book7);
 refreshMain();
-
+// delete and toggle-read buttons
 let bins = Array.from(document.getElementsByClassName('trash'));
 let reads = Array.from(document.getElementsByClassName('read'));
 
@@ -57,6 +57,7 @@ form.addEventListener('submit', (e) => {
     // GET info from NewBook HTML form
     const formData = new FormData(form);
     const data = Object.fromEntries(formData);
+    console.log(data);
 
     dialog.close();
 
@@ -71,7 +72,7 @@ form.addEventListener('submit', (e) => {
             deleteBook(bin);
         });
     });
-
+    // Update reads & reapply eventListeners to new indices
     reads = Array.from(document.getElementsByClassName('read'));
     reads.forEach(read => {
         read.addEventListener('click', () => {
@@ -124,8 +125,8 @@ function createCard(book) {
     const bin = new Image();
     bin.src = "./assets/trash-can-outline.svg"
     const read = new Image();
-    if (book.read)  read.src = "assets/book-check-outline.svg"
-    else  read.src = "./assets/book-open-variant.svg"
+    if (book.read === 'false') read.src = "./assets/book-open-variant.svg"
+    else read.src = "./assets/book-check-outline.svg"
     
 
     card.classList.add('card');
