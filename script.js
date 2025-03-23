@@ -145,14 +145,16 @@ function createCard(book) {
 }
 
 function deleteBook(bin) {
+    // get index and delete info from all arrays
+    // then refresh display
     const ind = bins.indexOf(bin);
     console.log(ind);
     library.splice(ind, 1);
     bins = bins.splice(ind, 1);
     refreshMain();
 
-    // IDK why, but bins must be redeclared for
-    // the eventListener to successfully reapply
+    // redeclare variables to rest indices
+    // then reassign eventListeners
     bins = Array.from(document.getElementsByClassName('trash'));
     bins.forEach(bin => {
         bin.addEventListener('click', () => {
