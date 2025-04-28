@@ -153,7 +153,7 @@ function deleteBook(bin) {
     bins = bins.splice(ind, 1);
     refreshMain();
 
-    // redeclare variables to rest indices
+    // redeclare variables to reset indices
     // then reassign eventListeners
     bins = Array.from(document.getElementsByClassName('trash'));
     bins.forEach(bin => {
