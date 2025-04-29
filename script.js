@@ -1,179 +1,184 @@
-// VARIABLES
-const main = document.querySelector('main');
-const dialog = document.querySelector('dialog');
-const newBookBtn = document.getElementById('new-book');
-const submitBtn = document.getElementById('submit');
-const closeBtn = document.getElementById('close')
-const form = document.getElementById('form');
+// CLASSES
+// Book
+class Book {
+    constructor(title, author, pages, read = false) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+        this.id = crypto.randomUUID();
+    }
 
-let library = [];
-
-const book = new Book("The Wizard of Oz", "L. Frank Baum", 215, true);
-const book1 = new Book("Salem's Lot", "Stephen King", 235, true);
-const book2 = new Book("Spare", "Prince Harry", 367, true);
-const book3 = new Book("The Code Book", "Simon Singh", 235, true);
-const book4 = new Book("The Wizard of Oz", "L. Frank Baum", 215, true);
-const book5 = new Book("Salem's Lot", "Stephen King", 235, true);
-const book6 = new Book("Spare", "Prince Harry", 367, true);
-const book7 = new Book("The Code Book", "Simon Singh", 235, true);
-
-
-
-
-// Create initial books
-library.push(book, book1, book2, book3, book4, book5, book6, book7);
-refreshMain();
-// delete and toggle-read buttons
-let bins = Array.from(document.getElementsByClassName('trash'));
-let reads = Array.from(document.getElementsByClassName('read'));
-
-
-// EVENT LISTENERS
-// Delete book event listener;
-bins.forEach(bin => {
-    bin.addEventListener('click', () => {
-        deleteBook(bin);
-    });
-});
-// (un)Read book event listener
-reads.forEach(read => {
-    read.addEventListener('click', () => {
-        toggleRead(read);
-    });
-});
-
-// New book listeners
-newBookBtn.addEventListener('click', () => {
-    dialog.showModal();
-});
-
-closeBtn.addEventListener('click', () => {
-    dialog.close();
-});
-
-form.addEventListener('submit', (e) => {
-    e.preventDefault();
-
-    // GET info from NewBook HTML form
-    const formData = new FormData(form);
-    const data = Object.fromEntries(formData);
-    console.log(data);
-
-    dialog.close();
-
-    // Create book and card
-    let book = addBookToLibrary(data.title, data.author, data.pages, data.read);
-    refreshMain();
-
-    // Update bins[] & 'delete' eventListeners
-    bins = Array.from(document.getElementsByClassName('trash'));
-    bins.forEach(bin => {
-        bin.addEventListener('click', () => {
-            deleteBook(bin);
-        });
-    });
-    // Update reads & reapply eventListeners to new indices
-    reads = Array.from(document.getElementsByClassName('read'));
-    reads.forEach(read => {
-        read.addEventListener('click', () => {
-            toggleRead(read);
-        });
-    });
-});
-
-
-
-
-
-
-
-
-
-// FUNCTION DECLARATIONS
-function Book(title, author, pages, read = false) {
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
-    this.id = crypto.randomUUID();
-    this.toggleRead = () => {
-        if (this.read) this.read = false;
-        else this.read = true;
+    toggleRead() {
+        if (this.read === true || this.read === "true") this.read = false;
+        else if (this.read === false || this.read === "false") this.read = true;
+        else alert('Error toggling read. Try again.');
     }
 }
 
-function addBookToLibrary(title, author, pages, read = false) {
-    const book = new Book(title, author, pages, read);
-    library.push(book);
 
-    return book;
-} 
+// Card
+class Card {
+    constructor(book, library) {
+        this.book = book;
+        this.card = document.createElement('div');
+        this.title = document.createElement('h3');
+        this.author = document.createElement('h5');
+        this.pages = document.createElement('p');
+        this.bin = new Image();
+        this.bin.src = "./assets/trash-can-outline.svg";
+        this.read = new Image();
 
-function refreshMain() {
-    main.innerHTML = '';
-    library.forEach(book => {
-        const card = createCard(book);
-        main.appendChild(card);
-    });
-}
+        this.classname = 'card';
 
-function createCard(book) {
-    const card = document.createElement('div');
-    const title = document.createElement('h3');
-    const author = document.createElement('h5');
-    const pages = document.createElement('p');
-    const bin = new Image();
-    bin.src = "./assets/trash-can-outline.svg"
-    const read = new Image();
-    if (book.read === 'false') read.src = "./assets/book-open-variant.svg"
-    else read.src = "./assets/book-check-outline.svg"
-    
+        this.title.textContent = book.title;
+        this.author.textContent = book.author;
+        this.pages.textContent = `${book.pages} pages`;
 
-    card.classList.add('card');
-    title.innerText = `${book.title}`;
-    author.innerText = `by ${book.author}`;
-    pages.innerText = `Pages: ${book.pages}`;
+        this.bin.classList.add('bin');
+        this.read.classList.add('read');
 
-    card.appendChild(title);
-    card.appendChild(author);
-    card.appendChild(pages);
-    card.appendChild(bin);
-    bin.classList.add('trash');
-    card.append(read);
-    read.classList.add('read');
-    return card;
-}
+        this.card.appendChild(this.title);
+        this.card.appendChild(this.author);
+        this.card.appendChild(this.pages);
+        this.card.appendChild(this.bin);
+        this.card.appendChild(this.read);
 
-function deleteBook(bin) {
-    // get index and delete info from all arrays
-    // then refresh display
-    const ind = bins.indexOf(bin);
-    console.log(ind);
-    library.splice(ind, 1);
-    bins = bins.splice(ind, 1);
-    refreshMain();
+        this.card.classList.add(`${this.classname}`);
 
-    // redeclare variables to reset indices
-    // then reassign eventListeners
-    bins = Array.from(document.getElementsByClassName('trash'));
-    bins.forEach(bin => {
-        bin.addEventListener('click', () => {
-            deleteBook(bin);
+        this.read.addEventListener('click', () => {
+            this.book.toggleRead();
+            this.setRead();
         });
-    });
-
-    reads = Array.from(document.getElementsByClassName('read'));
-    reads.forEach(read => {
-        read.addEventListener('click', () => {
-            toggleRead(read);
+        // library passed in @ card creation
+        this.bin.addEventListener('click', () => {
+            library.deleteBook(this.book.id);
         });
+    }
+
+    setRead() {
+        if (this.book.read === true || this.book.read === "true") this.read.src = "./assets/book-check-outline.svg";
+        else this.read.src = "./assets/book-open-variant.svg";
+    }
+
+    adoptParent(div) {
+        div.appendChild(this.card);
+    }
+
+    changeClassName(name) {
+        this.card.classList.remove(`${this.classname}`);
+        this.classname = name;
+        this.card.className.add(`${this.classname}`);
+    }
+
+    addClassName(name) {
+        this.card.classList.add(`${name}`);
+    }
+
+    removeClassName(name) {
+        this.card.classList.remove(`${name}`);
+    }
+}
+
+
+// Library
+class Library {
+    constructor() {
+        this.books = [];
+        this.cards = [];
+        this.shelf = document.createElement('div');
+        this.shelf.classList.add('library');
+    }
+
+    updateShelf() {
+        this.shelf.innerHTML = "";
+
+        this.cards.forEach(card => {
+            card.setRead();
+            this.shelf.appendChild(card.card);
+        });
+    }
+
+    addBook(title, author, pages, read = false) {
+        const book = new Book(title, author, pages, read);
+        const card = new Card(book, this);
+        this.books.push(book);
+        this.cards.push(card);
+        this.updateShelf();
+    }
+
+    deleteBook(id) {
+        const ind = this.books.findIndex(book =>
+            book.id === id);
+        
+        this.books.splice(ind, 1);
+        this.cards.splice(ind, 1);
+
+        this.updateShelf();
+    }
+
+
+    adoptParent(div) {
+        div.appendChild(this.shelf);
+    }
+
+    changeClassName(name) {
+        this.shelf.classList.remove(`${this.classname}`);
+        this.classname = name;
+        this.shelf.className.add(`${name}`);
+    }
+
+    addClassName(name) {
+        this.shelf.classList.add(`${name}`);
+    }
+
+    removeClassName(name) {
+        this.shelf.classList.remove(`${name}`);
+    }
+
+
+    prepopulate() {
+        this.addBook("The Wizard of Oz", "L. Frank Baum", 215, true);
+        this.addBook("Salem's Lot", "Stephen King", 235, true);
+        this.addBook("Spare", "Prince Harry", 367, true);
+        this.addBook("The Code Book", "Simon Singh", 235, true);
+        this.addBook('Autobiography of Red', 'Anne Carson', 149, true);
+    }
+}
+
+
+function generateLibrary(newBookBtn, closeBtn, dialog, form) {
+    const library = new Library();
+    // const newBookBtn = document.getElementById('new-book');
+    // const dialog = document.querySelector('dialog');
+    // const form = document.getElementById('form');
+    // const closeBtn = document.getElementById('close');
+
+    newBookBtn.addEventListener('click', () => {
+        dialog.showModal();
     });
+    closeBtn.addEventListener('click', () => {
+        dialog.close();
+    });
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const obj = Object.fromEntries(formData);
+        dialog.close();
+
+        library.addBook(obj.title, obj.author, obj.pages, obj.read);
+    });
+
+    library.adoptParent(document.querySelector('main'));
+    library.prepopulate();
+    library.updateShelf();
+
+    console.log(library);
 }
 
-function toggleRead(read) {
-    const ind = reads.indexOf(read);
-    library[ind].toggleRead();
+generateLibrary(document.getElementById('new-book'), 
+    document.getElementById('close'), 
+    document.querySelector('dialog'), 
+    document.getElementById('form'));
 
-    if (library[ind].read) reads[ind].src = "assets/book-check-outline.svg";
-    else read.src = "./assets/book-open-variant.svg"
-}
