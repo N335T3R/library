@@ -20,6 +20,7 @@ class Book {
 // Card
 class Card {
     constructor(book) {
+        this.book = book;
         this.card = document.createElement('div');
         this.title = document.createElement('h3');
         this.author = document.createElement('h5');
@@ -27,12 +28,14 @@ class Card {
         this.bin = new Image();
         this.bin.src = "./assets/trash-can-outline.svg";
         this.read = new Image();
+
+
         this.classname = 'card';
 
         this.title.textContent = book.title;
         this.author.textContent = book.author;
         this.pages.textContent = book.pages;
-        
+
         this.bin.classList.add('bin');
         this.read.classList.add('read');
 
@@ -112,6 +115,7 @@ class Library {
         this.shelf.innerHTML = "";
 
         this.cards.forEach(card => {
+            card.setRead();
             this.shelf.appendChild(card.card);
         });
     }
