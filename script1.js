@@ -29,7 +29,6 @@ class Card {
         this.bin.src = "./assets/trash-can-outline.svg";
         this.read = new Image();
 
-
         this.classname = 'card';
 
         this.title.textContent = book.title;
@@ -46,10 +45,15 @@ class Card {
         this.card.appendChild(this.read);
 
         this.card.classList.add(`${this.classname}`);
+
+        this.read.addEventListener('click', () => {
+            this.book.toggleRead();
+            this.setRead();
+        });
     }
 
     setRead() {
-        if (this.book.read === true) this.read.src = "./assets/book-check-outline.svg";
+        if (this.book.read === true || this.book.read === "true") this.read.src = "./assets/book-check-outline.svg";
         else this.read.src = "./assets/book-open-variant.svg";
     }
 
@@ -96,11 +100,6 @@ class Library {
         const card = new Card(book);
         this.books.push(book);
         this.cards.push(card);
-        this.updateShelf();
-    }
-
-    deleteBook(book, card) {
-        this.books.splice(this.books.indexOf(book), 1);
         this.updateShelf();
     }
 
@@ -159,6 +158,8 @@ function generateLibrary(newBookBtn, closeBtn, dialog, form) {
     library.adoptParent(document.querySelector('main'));
     library.prepopulate();
     library.updateShelf();
+
+    console.log(library);
 }
 
 generateLibrary(document.getElementById('new-book'), 
