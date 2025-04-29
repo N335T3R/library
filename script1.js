@@ -34,7 +34,7 @@ class Card {
 
         this.title.textContent = book.title;
         this.author.textContent = book.author;
-        this.pages.textContent = book.pages;
+        this.pages.textContent = `${book.pages} pages`;
 
         this.bin.classList.add('bin');
         this.read.classList.add('read');
@@ -82,15 +82,26 @@ class Library {
         this.shelf.classList.add('library');
     }
 
+    updateShelf() {
+        this.shelf.innerHTML = "";
+
+        this.cards.forEach(card => {
+            card.setRead();
+            this.shelf.appendChild(card.card);
+        });
+    }
+
     addBook(title, author, pages, read = false) {
         const book = new Book(title, author, pages, read);
         const card = new Card(book);
         this.books.push(book);
         this.cards.push(card);
+        this.updateShelf();
     }
 
-    deleteBook(book) {
+    deleteBook(book, card) {
         this.books.splice(this.books.indexOf(book), 1);
+        this.updateShelf();
     }
 
     adoptParent(div) {
@@ -111,14 +122,6 @@ class Library {
         this.shelf.classList.remove(`${name}`);
     }
 
-    updateShelf() {
-        this.shelf.innerHTML = "";
-
-        this.cards.forEach(card => {
-            card.setRead();
-            this.shelf.appendChild(card.card);
-        });
-    }
 
     prepopulate() {
         this.addBook("The Wizard of Oz", "L. Frank Baum", 215, true);
@@ -130,7 +133,36 @@ class Library {
 }
 
 
-const library = new Library();
-library.adoptParent(document.querySelector('main'));
-library.prepopulate();
-library.updateShelf();
+function generateLibrary(newBookBtn, closeBtn, dialog, form) {
+    const library = new Library();
+    // const newBookBtn = document.getElementById('new-book');
+    // const dialog = document.querySelector('dialog');
+    // const form = document.getElementById('form');
+    // const closeBtn = document.getElementById('close');
+
+    newBookBtn.addEventListener('click', () => {
+        dialog.showModal();
+    });
+    closeBtn.addEventListener('click', () => {
+        dialog.close();
+    });
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form);
+        const obj = Object.fromEntries(formData);
+        dialog.close();
+
+        library.addBook(obj.title, obj.author, obj.pages, obj.read);
+    });
+
+    library.adoptParent(document.querySelector('main'));
+    library.prepopulate();
+    library.updateShelf();
+}
+
+generateLibrary(document.getElementById('new-book'), 
+    document.getElementById('close'), 
+    document.querySelector('dialog'), 
+    document.getElementById('form'));
+
