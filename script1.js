@@ -32,6 +32,9 @@ class Card {
         this.title.textContent = book.title;
         this.author.textContent = book.author;
         this.pages.textContent = book.pages;
+        
+        this.bin.classList.add('bin');
+        this.read.classList.add('read');
 
         this.card.appendChild(this.title);
         this.card.appendChild(this.author);
@@ -80,7 +83,7 @@ class Library {
         const book = new Book(title, author, pages, read);
         const card = new Card(book);
         this.books.push(book);
-        this.cards.push(book);
+        this.cards.push(card);
     }
 
     deleteBook(book) {
@@ -109,7 +112,21 @@ class Library {
         this.shelf.innerHTML = "";
 
         this.cards.forEach(card => {
-            this.shelf.appendChild(card);
+            this.shelf.appendChild(card.card);
         });
     }
+
+    prepopulate() {
+        this.addBook("The Wizard of Oz", "L. Frank Baum", 215, true);
+        this.addBook("Salem's Lot", "Stephen King", 235, true);
+        this.addBook("Spare", "Prince Harry", 367, true);
+        this.addBook("The Code Book", "Simon Singh", 235, true);
+        this.addBook('Autobiography of Red', 'Anne Carson', 149, true);
+    }
 }
+
+
+const library = new Library();
+library.adoptParent(document.querySelector('main'));
+library.prepopulate();
+library.updateShelf();

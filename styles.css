@@ -139,6 +139,18 @@ main {
     grid-row: 3 / -1;
     grid-column: 1 / -1;
 
+    /* display: grid;
+    grid-auto-rows: 15rem;
+    grid-template-rows: repeat(auto);
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+    overflow: scroll; */
+
+    padding: 2rem 3rem; 
+    background-color: var(--grey);
+}
+
+.libary {
     display: grid;
     grid-auto-rows: 15rem;
     grid-template-rows: repeat(auto);
@@ -147,7 +159,6 @@ main {
     overflow: scroll;
 
     padding: 2rem 3rem;
-    background-color: var(--grey);
 }
 
 .card {
@@ -164,13 +175,13 @@ main {
     position: absolute;
     bottom: 5%;
 }
-.trash {
+.bin {
     position: absolute;
     bottom: 5%;
     left: 5%;
     width: 2rem;
 }
-.trash:hover {
+.bin:hover {
     cursor: pointer;
 }
 .read {
